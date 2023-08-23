@@ -42,6 +42,17 @@ pipeline {
 				          sh 'sudo docker push fredericbaudeau/devsecops1:""$GIT_COMMIT""'
 		        	                                  					    }
 		             }
-         					}					
+         					}
+//-----KUBERNETES	
+		stage('Deployment Kubernetes  ') {
+      			steps {
+        			withKubeConfig([credentialsId: 'idkuberfred']) {
+               			sh "sed -i 's#replace#fredericbaudeau/devops-app:${GIT_COMMIT}#g' k8s_deployment_service.yaml"
+               			sh "kubectl apply -f k8s_deployment_service.yaml"
+             		     							}															
+      						}
+    				}    
+	
+//------------------------------------------------------------------------------------------------------------------------		
    }
 }
