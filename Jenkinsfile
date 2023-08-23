@@ -36,10 +36,10 @@ pipeline {
 		stage('Docker Build and Push') {
 			steps {
 		                withCredentials([string(credentialsId: 'Freddock', variable: 'FREDDOCK')]) {
-				          sh 'sudo docker login -u fredericbaudeau -p $FREDDOCK'
+				          sh 'sudo docker login -u fred3945 -p $FREDDOCK'
 				          sh 'printenv'
-				          sh 'sudo docker build -t fredericbaudeau/devsecops1:""$GIT_COMMIT"" .'
-				          sh 'sudo docker push fredericbaudeau/devsecops1:""$GIT_COMMIT""'
+				          sh 'sudo docker build -t fred3945/devsecops1:""$GIT_COMMIT"" .'
+				          sh 'sudo docker push fred3945/devsecops1:""$GIT_COMMIT""'
 		        	                                  					    }
 		             }
          					}
