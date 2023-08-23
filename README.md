@@ -18,4 +18,4 @@
 
 `curl node-service-ip:5000/plusone/99`
 
-\\ Test frédéric //
+\\ *Test frédéric* //
