@@ -1,50 +1,47 @@
 pipeline {
-	   agent any
-	   stages {
+	agent any
+	stages {
 //----BUILD
-	           stage('Build Artifact') {
-                                               steps {
-                                                       sh "mvn clean package -DskipTests=true"
-                                                       archive 'target/*.jar'  //test
-                                                     }
-                                            }   
+		stage('Build Artifact') {
+                        steps {
+                               sh "mvn clean package -DskipTests=true"
+                               archive 'target/*.jar'  //test
+                               }
+                                         }   
 //----JACOCO
-	           stage('UNIT test & jacoco ') {
-                                                steps {
-                                                        sh "mvn test"
-                                                       }
-                                                post {
-                                                        always {
-                                                                 junit 'target/surefire-reports/*.xml'
-                                                                 jacoco execPattern: 'target/jacoco.exec'
-                                                                }
-                                                     }
+	        stage('UNIT test & jacoco ') {
+                        steps {
+                               sh "mvn test"
+                               }
+                        post  {
+                               always {
+                                   junit 'target/surefire-reports/*.xml'
+                                   jacoco execPattern: 'target/jacoco.exec'
+                                      }
+                               }
 
-                                                 }
-//--------------------------
-                  stage('Mutation Tests - PIT') {
-                                                 steps {
-                                                         sh "mvn org.pitest:pitest-maven:mutationCoverage"
-                                                       }
-                                                 post { 
-                                                        always { 
-                                                                 pitmutation mutationStatsFile: '**/target/pit-reports/**/mutations.xml'
-                                                               }
-                                                      }
-                                                 }
-//------------------
-		 stage('Docker Build and Push') {
-		                               steps {
-		                                        withCredentials([string(credentialsId: 'Freddock', variable: 'FREDDOCK')]) {
-														          sh 'sudo docker login -u fredericbaudeau -p $FREDDOCK'
-														          sh 'printenv'
-														          sh 'sudo docker build -t fredericbaudeau/devsecops1:""$GIT_COMMIT"" .'
-														          sh 'sudo docker push fredericbaudeau/devsecops1:""$GIT_COMMIT""'
-		        																}
-		
-	   
-	   						}
-          					}					
-	   }
-
+                                              }
+//-----MUTATION
+		stage('Mutation Tests - PIT') {
+                	steps {
+                        	sh "mvn org.pitest:pitest-maven:mutationCoverage"
+                              }
+			post { 
+                        	always { 
+                                	pitmutation mutationStatsFile: '**/target/pit-reports/**/mutations.xml'
+                                        }
+                             }
+                                               }
+//-----DOCKER
+		stage('Docker Build and Push') {
+			steps {
+		                withCredentials([string(credentialsId: 'Freddock', variable: 'FREDDOCK')]) {
+				          sh 'sudo docker login -u fredericbaudeau -p $FREDDOCK'
+				          sh 'printenv'
+				          sh 'sudo docker build -t fredericbaudeau/devsecops1:""$GIT_COMMIT"" .'
+				          sh 'sudo docker push fredericbaudeau/devsecops1:""$GIT_COMMIT""'
+		        	                                  					    }
+		             }
+         					}					
+   }
 }
